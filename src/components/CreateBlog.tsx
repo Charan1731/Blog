@@ -2,18 +2,32 @@ import React, { useState } from 'react';
 import { PenSquare } from 'lucide-react';
 
 interface CreateBlogProps {
-  onSubmit: (title: string, content: string) => void;
+  onSubmit: (title: string, content: string) => Promise<void>; // Assuming onSubmit is asynchronous
 }
 
 const CreateBlog: React.FC<CreateBlogProps> = ({ onSubmit }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [isLoading, setIsLoading] = useState(false);  // Add loading state
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(title, content);
-    setTitle('');
-    setContent('');
+    setIsLoading(true);  // Show loading state
+    setSuccessMessage(''); // Clear any previous success message
+    setErrorMessage('');   // Clear any previous error message
+    
+    try {
+      await onSubmit(title, content);
+      setSuccessMessage('Blog successfully published!');  // Show success message
+      setTitle('');
+      setContent('');
+    } catch (error) {
+      setErrorMessage('Failed to publish blog. Please try again later.');  // Show error message
+    } finally {
+      setIsLoading(false);  // Hide loading state
+    }
   };
 
   return (
@@ -44,12 +58,21 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ onSubmit }) => {
           required
         />
       </div>
+      {errorMessage && <div className="text-red-500 text-sm">{errorMessage}</div>}
+      {successMessage && <div className="text-green-500 text-sm">{successMessage}</div>}
       <button
         type="submit"
         className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        disabled={isLoading}  // Disable button when loading
       >
-        <PenSquare className="h-5 w-5" />
-        <span>Publish Blog</span>
+        {isLoading ? (
+          <span>Loading...</span> // Show loading state text
+        ) : (
+          <>
+            <PenSquare className="h-5 w-5" />
+            <span>Publish Blog</span>
+          </>
+        )}
       </button>
     </form>
   );

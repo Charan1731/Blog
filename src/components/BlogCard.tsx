@@ -1,28 +1,19 @@
 import React from 'react';
-import { Clock, User } from 'lucide-react';
-import { Blog } from '../types/Blog';
+import CreateBlog from './CreateBlog';
 
-interface BlogCardProps {
-  blog: Blog;
-}
+const ParentComponent: React.FC = () => {
+  const handleBlogSubmit = async (title: string, content: string) => {
+    try {
+      // Simulate an API call or blockchain transaction
+      console.log("Submitting blog:", title, content);
+      // Add your logic to save the blog post here (e.g., call an API or smart contract)
+    } catch (error) {
+      console.error("Error submitting blog:", error);
+      throw new Error("Failed to publish blog.");
+    }
+  };
 
-const BlogCard: React.FC<BlogCardProps> = ({ blog }) => {
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-      <h2 className="text-2xl font-bold mb-4">{blog.title}</h2>
-      <p className="text-gray-600 mb-4 line-clamp-3">{blog.content}</p>
-      <div className="flex items-center justify-between text-sm text-gray-500">
-        <div className="flex items-center space-x-2">
-          <User className="h-4 w-4" />
-          <span>{blog.author}</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Clock className="h-4 w-4" />
-          <span>{new Date(blog.timestamp).toLocaleDateString()}</span>
-        </div>
-      </div>
-    </div>
-  );
+  return <CreateBlog onSubmit={handleBlogSubmit} />;
 };
 
-export default BlogCard;
+export default ParentComponent;
